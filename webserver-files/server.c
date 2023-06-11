@@ -24,29 +24,49 @@ RequestManager requests_control;
 
 // -------------------- our cool functions -------------------- //
 
+void* thread_routine(void* worker){
+
+    WorkerThread* worker_act= (WorkerThread*)worker;
+
+    while(1){
+        pthread_mutex_lock(&Lock);
+        while(!requestManagerHasWaitingRequests(requests_control)){
+            pthread_cond_wait(&EmptyPool, &Lock);
+        }
+
+        RequestObject request_ready = requestManagerGetReadyRequest(requests_control);
+        requestManagerAddReadyRequest(requests_control, request_ready);
+
+        int fd = request_ready->val;
+        pthread_mutex_unlock(&Lock);
+
+        requestHandle(fd);
+	    Close(fd);
+
+        pthread_mutex_lock(&Lock);
+        requestManagerRemoveFinishedRequest(requests_control, request_ready);
+        pthread_cond_signal(&FullPool);
+        pthread_mutex_unlock(&Lock);
+    }
+}
+
 void pool_initialization(int threads){
 
+    
     pthread_t *threads_pool = (pthread_t*)malloc(threads * sizeof(pthread_t));
+    memset(threads_pool, 0, threads * sizeof(threads_pool[0]));
 
     for (int i = 0; i < threads; i++){
 
         WorkerThread* worker = create_thread(i);
         int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine, (void*)worker);
         if (ans != 0){
-            fprinff(stderr, "pthread create failed\n"); // TODO: check if message is OK 
+            fprinff(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
             // TODO: maybe free worker?free pool? free locks?
             exit(1);
         }
     }
 }
-
-
-
-
-
-
-
-
 
 // -------------------- end of cool functions -------------------- //
 
@@ -88,27 +108,19 @@ int main(int argc, char *argv[])
 
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *) &clientlen);
-    
+
+        pthread_mutex_lock(&Lock);
         if(requestManagerCanAcceptRequests(requests_control)){
             RequestObject fish_request = createRequestObject(connfd);
             requestManagerAddPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
+            pthread_mutex_unlock(&Lock);
         }
         else{
             // TODO:part 2 code
         
         }
 
-
-    
-
-	// 
-	// HW3: In general, don't handle the request in the main thread.
-	// Save the relevant info in a buffer and have one of the worker threads 
-	// do the work. 
-	requestHandle(connfd);
-
-	Close(connfd);
     }
 
     pthread_cond_destroy(&FullPool);
