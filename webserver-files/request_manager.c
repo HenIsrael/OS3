@@ -113,6 +113,10 @@ int requestManagerRemoveOldestRequestFromWaitingQueue(RequestManager requestMana
     return c;
 }
 
+void requestManagerEnlargeMaxAcceptedRequests(RequestManager requestManager){
+    requestManager->maxAcceptedRequests = requestManager->maxAcceptedRequests + 1;
+}
+
 void requestManagerDelete(RequestManager requestManager){
     listDelete(requestManager->waitingRequestsQueue);
     listDelete(requestManager->runningRequests);
