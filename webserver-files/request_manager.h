@@ -17,6 +17,7 @@ RequestManager requestManagerCreate(int threadsNum, int maxAcceptedRequests);
 int requestManagerGetWaitingQueueSize(RequestManager requestManager);
 int requestManagerHasWaitingRequests(RequestManager requestManager);
 int requestManagerCanAcceptRequests(RequestManager requestManager);
+int requestManagerHasReachedItMaxRequests(RequestManager requestManager, int max_size);
 
 RequestObject requestManagerGetReadyRequest(RequestManager requestManager);//todo: return status instead
 

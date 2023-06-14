@@ -57,6 +57,14 @@ int requestManagerCanAcceptRequests(RequestManager requestManager){
     return 0;
 }
 
+int requestManagerHasReachedItMaxRequests(RequestManager requestManager, int max_size){
+    int runningQueueSize = listGetSize(requestManager->runningRequests);
+    int waitingQueueSize = listGetSize(requestManager->waitingRequestsQueue);
+    if(runningQueueSize + waitingQueueSize < max_size)
+        return 0;
+    return 1;
+}
+
 RequestObject requestManagerGetReadyRequest(RequestManager requestManager){
     int size = listGetSize(requestManager->waitingRequestsQueue);
     if(size == 0)
