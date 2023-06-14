@@ -73,9 +73,9 @@ void pool_initialization(int threads){
 // -------------------- end of cool functions -------------------- //
 
 
-void getargs(int *port, int *threads, int *queue_size, char *schedalg, int argc, char *argv[]) //TODO : need to add more parms 
+void getargs(int *port, int *threads, int *queue_size, char *schedalg, int *max_size, int argc, char *argv[]) //TODO : need to add more parms 
 {
-    if (argc < 5) { // TODO : maybe 5 or 6 depend the amount of params
+    if (argc < 5) { 
 	fprintf(stderr, "Usage: %s <port>\n", argv[0]);
 	exit(1);
     }
@@ -83,20 +83,18 @@ void getargs(int *port, int *threads, int *queue_size, char *schedalg, int argc,
     *threads = atoi(argv[2]);
     *queue_size = atoi(argv[3]);
     strcpy(schedalg, argv[4]);
-    //TODO: max_size = 
-
+    *max_size = atoi(argv[3]);
 }
 
 
 int main(int argc, char *argv[])
 {
-    int listenfd, connfd, port, clientlen, threads, queue_size;
+    int listenfd, connfd, port, clientlen, threads, queue_size, max_size;
     char *schedalg = (char*)malloc(MAXSCHEDULINGLEN);
-    // TODO: max_size?
-   
+
     struct sockaddr_in clientaddr;
 
-    getargs(&port, &threads, &queue_size, schedalg, argc, argv);
+    getargs(&port, &threads, &queue_size, schedalg, &max_size,  argc, argv);
 
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
