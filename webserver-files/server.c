@@ -73,7 +73,7 @@ void pool_initialization(int threads){
 // -------------------- end of cool functions -------------------- //
 
 
-void getargs(int *port, int *threads, int *queue_size, char *schedalg, int *max_size, int argc, char *argv[]) //TODO : need to add more parms 
+void getargs(int *port, int *threads, int *queue_size, char *schedalg, int *max_size, int argc, char *argv[])
 {
     if (argc < 5) { 
 	fprintf(stderr, "Usage: %s <port>\n", argv[0]);
@@ -158,9 +158,19 @@ int main(int argc, char *argv[])
             {
                 /* code */
             }
-            else if (strcmp(schedalg, "dynamic")) // TODO: HEN
+            else if (strcmp(schedalg, "dynamic")) 
             {
-                /* code */
+                if(requestManagerHasReachedItMaxRequests(requests_control, max_size)){
+                    // conduct like it is 'drop tail' policy
+                    Close(connfd);
+                    pthread_mutex_unlock(&Lock);
+                    continue;
+                }
+                else{
+                    Close(connfd);
+                    requestManagerEnlargeMaxAcceptedRequests(requests_control);
+                    pthread_mutex_unlock(&Lock);
+                }
             }
             else if (strcmp(schedalg, "random")) // TODO: To be continue...
             {
