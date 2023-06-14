@@ -4,6 +4,8 @@
 #include "worker.h"
 #include "request_obj.h"
 
+#define MAXSCHEDULINGLEN 7
+
 pthread_mutex_t Lock;
 pthread_cond_t FullPool;
 pthread_cond_t EmptyPool;
@@ -71,7 +73,7 @@ void pool_initialization(int threads){
 // -------------------- end of cool functions -------------------- //
 
 
-void getargs(int *port, int *threads, int *queue_size,  int argc, char *argv[]) //TODO : need to add more parms 
+void getargs(int *port, int *threads, int *queue_size, char *schedalg, int argc, char *argv[]) //TODO : need to add more parms 
 {
     if (argc < 4) { // TODO : maybe 5 or 6 depend the amount of params
 	fprintf(stderr, "Usage: %s <port>\n", argv[0]);
@@ -80,8 +82,8 @@ void getargs(int *port, int *threads, int *queue_size,  int argc, char *argv[]) 
     *port = atoi(argv[1]);
     *threads = atoi(argv[2]);
     *queue_size = atoi(argv[3]);
-    //TODO: *schedalg = 
-    //      *max_size = 
+    strcpy(schedalg, argv[4]);
+    //TODO: max_size = 
 
 }
 
@@ -89,12 +91,12 @@ void getargs(int *port, int *threads, int *queue_size,  int argc, char *argv[]) 
 int main(int argc, char *argv[])
 {
     int listenfd, connfd, port, clientlen, threads, queue_size;
-    // TODO: [1] add policy param : 'schedalg' char*
-    //       [2] max_size?
-
+    char *schedalg = (char*)malloc(MAXSCHEDULINGLEN);
+    // TODO: [1] max_size?
+   
     struct sockaddr_in clientaddr;
 
-    getargs(&port, &threads, &queue_size, argc, argv);
+    getargs(&port, &threads, &queue_size, schedalg, argc, argv);
 
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
@@ -117,7 +119,31 @@ int main(int argc, char *argv[])
             pthread_mutex_unlock(&Lock);
         }
         else{
-            // TODO:part 2 code
+            if (strcmp(schedalg, "block")) // TODO: HEN
+            {
+                /* code */
+            }
+            else if (strcmp(schedalg, "dt")) // TODO: TALI THE QUEEN
+            {
+                /* code */
+            }
+            else if (strcmp(schedalg, "dh")) // TODO: HEN
+            {
+                /* code */
+            }
+            else if (strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
+            {
+                /* code */
+            }
+            else if (strcmp(schedalg, "dynamic")) // TODO: HEN
+            {
+                /* code */
+            }
+            else if (strcmp(schedalg, "random")) // TODO: To be continue...
+            {
+                /* code */
+            }
+            
         
         }
 
