@@ -7,8 +7,8 @@
 #define MAXSCHEDULINGLEN 7
 
 pthread_mutex_t Lock;
-pthread_cond_t FullPool;
-pthread_cond_t EmptyPool;
+pthread_cond_t FullPool;  // for both waiting and running queues
+pthread_cond_t EmptyPool; // only for waiting requests queue
 RequestManager requests_control;
 
 
@@ -75,7 +75,7 @@ void pool_initialization(int threads){
 
 void getargs(int *port, int *threads, int *queue_size, char *schedalg, int argc, char *argv[]) //TODO : need to add more parms 
 {
-    if (argc < 4) { // TODO : maybe 5 or 6 depend the amount of params
+    if (argc < 5) { // TODO : maybe 5 or 6 depend the amount of params
 	fprintf(stderr, "Usage: %s <port>\n", argv[0]);
 	exit(1);
     }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 {
     int listenfd, connfd, port, clientlen, threads, queue_size;
     char *schedalg = (char*)malloc(MAXSCHEDULINGLEN);
-    // TODO: [1] max_size?
+    // TODO: max_size?
    
     struct sockaddr_in clientaddr;
 
@@ -119,17 +119,42 @@ int main(int argc, char *argv[])
             pthread_mutex_unlock(&Lock);
         }
         else{
-            if (strcmp(schedalg, "block")) // TODO: HEN
+            if (strcmp(schedalg, "block")) 
             {
-                /* code */
+
+                while (!requestManagerCanAcceptRequests(requests_control)){
+                
+                    pthread_cond_wait(&FullPool, &Lock);
+                }
+
+                RequestObject fish_request = createRequestObject(connfd);
+                requestManagerAddPendingRequest(requests_control, fish_request);
+                pthread_cond_signal(&EmptyPool);
+                pthread_mutex_unlock(&Lock);
             }
             else if (strcmp(schedalg, "dt")) // TODO: TALI THE QUEEN
             {
                 /* code */
             }
-            else if (strcmp(schedalg, "dh")) // TODO: HEN
+            else if (strcmp(schedalg, "dh")) 
             {
-                /* code */
+                if (!requestManagerCanAcceptRequests(requests_control)){
+                
+                    if (!requestManagerHasWaitingRequests(requests_control)){
+                    
+                        Close(connfd);
+                        pthread_mutex_unlock(&Lock);
+                        continue;
+                    }
+
+                    int old_req_fd = requestManagerRemoveOldestRequestFromWaitingQueue(requests_control);
+                    Close(old_req_fd);
+                    RequestObject fish_request = createRequestObject(connfd);
+                    requestManagerAddPendingRequest(requests_control, fish_request);
+                    pthread_cond_signal(&EmptyPool);
+                    pthread_mutex_unlock(&Lock);
+
+                }
             }
             else if (strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
             {
