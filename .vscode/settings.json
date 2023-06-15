@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "request_manager.h": "c",
+        "request.h": "c",
+        "segel.h": "c",
+        "worker.h": "c"
+    }
+}

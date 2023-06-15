@@ -2,7 +2,7 @@
 #include "request.h"
 #include "request_manager.h"
 #include "worker.h"
-#include "request_obj.h"
+//#include "request_obj.h"
 
 #define MAXSCHEDULINGLEN 7
 
@@ -55,23 +55,6 @@ void* thread_routine(void* worker){
 }
 */
 
-void pool_initialization(int threads){
-    
-    pthread_t *threads_pool = (pthread_t*)malloc(threads * sizeof(pthread_t));
-    memset(threads_pool, 0, threads * sizeof(threads_pool[0]));
-
-    for (int i = 0; i < threads; i++){
-
-        WorkerThread* worker = create_thread(i);
-        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine, (void*)worker);
-        if (ans != 0){
-            fprinff(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
-            // TODO: maybe free worker?free pool? free locks?
-            exit(1);
-        }
-    }
-}
-
 void thread_routine ( WorkerThread worker )
 {
     while (1)
@@ -99,6 +82,25 @@ void thread_routine ( WorkerThread worker )
         pthread_mutex_unlock(&Lock);
     }
 }
+
+void pool_initialization(int threads){
+    
+    pthread_t *threads_pool = (pthread_t*)malloc(threads * sizeof(pthread_t));
+    memset(threads_pool, 0, threads * sizeof(threads_pool[0]));
+
+    for (int i = 0; i < threads; i++){
+
+        WorkerThread* worker = create_thread(i);
+        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine, (void*)worker);
+        if (ans != 0){
+            fprintf(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
+            // TODO: maybe free worker?free pool? free locks?
+            exit(1);
+        }
+    }
+}
+
+
 
 
 
@@ -179,7 +181,7 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(schedalg, "random")) // TODO: To be continue...
             {
-                int size= istGetSize(requests_control->waitingRequestsQueue);
+                int size= listGetSize(requests_control->waitingRequestsQueue);
                 int size_to_drop = size /2 ;
                 for( int i= 0 ; i<size_to_drop ; i++)
                 {
@@ -188,7 +190,7 @@ int main(int argc, char *argv[])
                 RequestObject fish_request = createRequestObject(connfd);
                 requestManagerAddPendingRequest(requests_control, fish_request);
                 pthread_cond_signal(&EmptyPool);
-                thread_mutex_unlock(&Lock);
+                pthread_mutex_unlock(&Lock);
             }
             
         
