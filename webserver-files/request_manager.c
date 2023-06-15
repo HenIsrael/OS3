@@ -106,6 +106,11 @@ RequestObject requestManagerRemoveRequestFromWaitingQueueAtIndex(RequestManager 
     return requestObject1;
 }
 
+RequestObject requestManagerRemovRandeRequestFromWaitingQueue(RequestManager requestManager){
+   int rand_index_from_waiting = rand() % requestManagerGetWaitingQueueSize(requestManager);
+   return requestManagerRemoveRequestFromWaitingQueueAtIndex(requestManager, rand_index_from_waiting);
+}
+
 int requestManagerRemoveOldestRequestFromWaitingQueue(RequestManager requestManager) {
     RequestObject requestObject = listPopFront(requestManager->waitingRequestsQueue);
     int c = requestObject->val;

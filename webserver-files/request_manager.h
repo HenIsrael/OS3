@@ -27,6 +27,7 @@ void requestManagerRemoveFinishedRequest(RequestManager requestManager, RequestO
 void requestManagerRemoveRequestFromWaitingQueue(RequestManager requestManager, RequestObject requestObject);//todo: return status instead
 
 RequestObject requestManagerRemoveRequestFromWaitingQueueAtIndex(RequestManager requestManager, int index);//todo: return status instead
+RequestObject requestManagerRemovRandeRequestFromWaitingQueue(RequestManager requestManager);
 
 int requestManagerRemoveOldestRequestFromWaitingQueue(RequestManager requestManager);//todo: return status instead
 
