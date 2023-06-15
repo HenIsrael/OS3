@@ -9,6 +9,7 @@
 pthread_mutex_t Lock;
 pthread_cond_t FullPool;
 pthread_cond_t EmptyPool;
+pthread_cond_t NoFish;
 RequestManager requests_control;
 
 
@@ -26,6 +27,7 @@ RequestManager requests_control;
 
 // -------------------- our cool functions -------------------- //
 
+/*
 void* thread_routine(void* worker){
 
     WorkerThread* worker_act= (WorkerThread*)worker;
@@ -51,6 +53,7 @@ void* thread_routine(void* worker){
         pthread_mutex_unlock(&Lock);
     }
 }
+*/
 
 void pool_initialization(int threads){
     
@@ -74,7 +77,9 @@ void thread_routine ( WorkerThread worker )
     while (1)
     {
         pthread_mutex_lock(&Lock);
+        while(!requestManagerHasWaitingRequests(requests_control)){
         pthread_cond_wait(&EmptyPool , &Lock);
+        }
         // קמתי לתחיה, אני רוצה למשוך משימה מהתור 
         RequestObject current_task = requestManagerGetReadyRequest(requests_control);
         requestManagerAddReadyRequest(requests_control, current_task);
@@ -86,7 +91,11 @@ void thread_routine ( WorkerThread worker )
 
         pthread_mutex_lock(&Lock);
         requestManagerRemoveFinishedRequest(requests_control, current_task);
-
+        if(listGetSize(requests_control->runningRequests)== 0)
+        {
+            pthread_cond_signal(&NoFish);
+        }
+        pthread_cond_signal(&FullPool);
         pthread_mutex_unlock(&Lock);
     }
 }
@@ -123,6 +132,7 @@ int main(int argc, char *argv[])
 
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
+    pthread_cond_init(&NoFish, NULL);
     pthread_mutex_init(&Lock, NULL);
 
     requests_control = requestManagerCreate(0, queue_size);
@@ -140,7 +150,6 @@ int main(int argc, char *argv[])
             requestManagerAddPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
             pthread_mutex_unlock(&Lock);
-            pthread_mutex_unlock(&Lock);
         }
         else{
             if (strcmp(schedalg, "block")) // TODO: HEN
@@ -149,7 +158,7 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(schedalg, "dt")) // TODO: TALI THE QUEEN
             {
-                /* code */
+                close(connfd);
             }
             else if (strcmp(schedalg, "dh")) // TODO: HEN
             {
@@ -157,7 +166,12 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
             {
-                /* code */
+                close(connfd);
+                while ( listGetSize(requests_control->runningRequests)!= 0 )
+                {
+                    pthread_cond_wait( &NoFish , &Lock);
+                }
+                pthread_mutex_unlock(&Lock);   
             }
             else if (strcmp(schedalg, "dynamic")) // TODO: HEN
             {
@@ -165,7 +179,16 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(schedalg, "random")) // TODO: To be continue...
             {
-                /* code */
+                int size= istGetSize(requests_control->waitingRequestsQueue);
+                int size_to_drop = size /2 ;
+                for( int i= 0 ; i<size_to_drop ; i++)
+                {
+                    requestManagerRemoveRequestFromWaitingQueueAtIndex(requests_control, rand()%(size-1-i));
+                }
+                RequestObject fish_request = createRequestObject(connfd);
+                requestManagerAddPendingRequest(requests_control, fish_request);
+                pthread_cond_signal(&EmptyPool);
+                thread_mutex_unlock(&Lock);
             }
             
         
@@ -175,6 +198,7 @@ int main(int argc, char *argv[])
 
     pthread_cond_destroy(&FullPool);
     pthread_cond_destroy(&EmptyPool);
+    pthread_cond_destroy(&NoFish);
     pthread_mutex_destroy(&Lock);
     // TODO : free pool of threads 
 }
