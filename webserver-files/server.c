@@ -139,6 +139,8 @@ int main(int argc, char *argv[])
                 if (!requestManagerCanAcceptRequests(requests_control)){
                 
                     if (!requestManagerHasWaitingRequests(requests_control)){
+                        // case no waiting requests
+                        // do nothing
                     
                         Close(connfd);
                         pthread_mutex_unlock(&Lock);
@@ -177,8 +179,8 @@ int main(int argc, char *argv[])
                 if (!requestManagerCanAcceptRequests(requests_control))
                 {
                     if(!requestManagerHasWaitingRequests(requests_control)){
-                    // case no waiting requests
-                    // do nothing
+                        // case no waiting requests
+                        // do nothing
                     
                         Close(connfd);
                         pthread_mutex_unlock(&Lock);
