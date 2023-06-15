@@ -100,7 +100,7 @@ void pool_initialization(int threads){
     for (int i = 0; i < threads; i++){
 
         WorkerThread* worker = create_thread(i);
-        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine, (void*)worker);
+        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routineHen, (void*)worker);
         if (ans != 0){
             fprintf(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
             // TODO: maybe free worker?free pool? free locks?
