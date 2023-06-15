@@ -40,11 +40,27 @@ void pool_initialization(int threads){
     }
 }
 
+void thread_routine ( WorkerThread worker )
+{
+    while (1)
+    {
+        pthread_mutex_lock(&Lock);
+        pthread_cond_wait(&EmptyPool , &Lock);
+        // קמתי לתחיה, אני רוצה למשוך משימה מהתור 
+        RequestObject current_task = requestManagerGetReadyRequest(requests_control);
+        requestManagerAddReadyRequest(requests_control, current_task);
+        int soc_fd= current_task->val;
+        pthread_mutex_unlock(&Lock);
 
+        requestHandle(soc_fd);
+        Close(soc_fd);
 
+        pthread_mutex_lock(&Lock);
+        requestManagerRemoveFinishedRequest(requests_control, current_task);
 
-
-
+        pthread_mutex_unlock(&Lock);
+    }
+}
 
 
 
@@ -89,10 +105,12 @@ int main(int argc, char *argv[])
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *) &clientlen);
     
+        pthread_mutex_lock(&Lock);
         if(requestManagerCanAcceptRequests(requests_control)){
             RequestObject fish_request = createRequestObject(connfd);
             requestManagerAddPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
+            pthread_mutex_unlock(&Lock);
         }
         else{
             // TODO:part 2 code
