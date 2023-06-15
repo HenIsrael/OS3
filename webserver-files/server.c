@@ -172,12 +172,34 @@ int main(int argc, char *argv[])
                     pthread_mutex_unlock(&Lock);
                 }
             }
-            else if (strcmp(schedalg, "random")) // TODO: To be continue...
+            else if (strcmp(schedalg, "random"))
             {
-                /* code */
+                if (!requestManagerCanAcceptRequests(requests_control))
+                {
+                    if(!requestManagerHasWaitingRequests(requests_control)){
+                    // case no waiting requests
+                    // do nothing
+                    
+                        Close(connfd);
+                        pthread_mutex_unlock(&Lock);
+                        continue;
+                    }
+
+                    double num_to_delete = ceil(((((double) requestManagerGetWaitingQueueSize(requests_control)) / 2)));
+                    for (int i = 0; i < num_to_delete; i++) {
+                        //remove randomly half of the waiting requests
+                        RequestObject rand_fish_request = requestManagerRemovRandRequestFromWaitingQueue(requests_control);
+                        Close(rand_fish_request->val);
+                    }
+
+                    RequestObject fish_request = createRequestObject(connfd);
+                    requestManagerAddPendingRequest(requests_control, fish_request);
+                    pthread_cond_signal(&EmptyPool);
+                    pthread_mutex_unlock(&Lock);
+                }
+            
             }
             
-        
         }
 
     }
