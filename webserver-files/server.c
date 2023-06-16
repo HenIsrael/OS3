@@ -126,7 +126,7 @@ void getargs(int *port, int *threads, int *queue_size, char *schedalg, int *max_
     *threads = atoi(argv[2]);
     *queue_size = atoi(argv[3]);
     strcpy(schedalg, argv[4]);
-    *max_size = atoi(argv[3]);
+    *max_size = atoi(argv[5]);
 }
 
 
