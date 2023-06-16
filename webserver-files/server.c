@@ -111,6 +111,12 @@ void pool_initialization(int threads){
     }
 }
 
+void queues_initialization(int queue_size)
+{
+    
+    requests_control = requestManagerCreate(0, queue_size);
+}
+
 
 
 
@@ -147,7 +153,7 @@ int main(int argc, char *argv[])
     pthread_cond_init(&NoFish, NULL);
     
 
-    requests_control = requestManagerCreate(0, queue_size);
+    queues_initialization(queue_size);
     pool_initialization(threads);
 
     listenfd = Open_listenfd(port);
