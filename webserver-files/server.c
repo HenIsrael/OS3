@@ -56,6 +56,7 @@ void* thread_routineHen(void* worker){
         pthread_cond_signal(&FullPool);
         pthread_mutex_unlock(&Lock);
     }
+    return NULL;
 }
 
 
