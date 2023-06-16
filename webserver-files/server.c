@@ -2,6 +2,7 @@
 #include "request.h"
 #include "request_manager.h"
 #include "worker.h"
+#include "request_obj.h"
 
 #include <math.h>
 
