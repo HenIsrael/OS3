@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
             pthread_mutex_unlock(&Lock);
         }
         else{
-            if (strcmp(schedalg, "block") == 0) 
+            if (!strcmp(schedalg, "block")) 
             {
 
                 while (!requestManagerCanAcceptRequests(requests_control)){
@@ -183,12 +183,12 @@ int main(int argc, char *argv[])
                 pthread_cond_signal(&EmptyPool);
                 pthread_mutex_unlock(&Lock);
             }
-            else if (strcmp(schedalg, "dt") == 0) // TODO: TALI THE QUEEN
+            else if (!strcmp(schedalg, "dt")) // TODO: TALI THE QUEEN
             {
                 close(connfd);
                 pthread_mutex_unlock(&Lock);
             }
-            else if (strcmp(schedalg, "dh") == 0) 
+            else if (!strcmp(schedalg, "dh")) 
             {
                 if (!requestManagerCanAcceptRequests(requests_control)){
                 
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
 
                 }
             }
-            else if (strcmp(schedalg, "bf") == 0) // TODO: TALI THE QUEEN
+            else if (!strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
             {
                 close(connfd);
                 while ( listGetSize(requests_control->runningRequests)!= 0 )
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
                 }
                 pthread_mutex_unlock(&Lock);   
             }
-            else if (strcmp(schedalg, "dynamic") == 0) 
+            else if (!strcmp(schedalg, "dynamic")) 
             {
                 if(requestManagerHasReachedItMaxRequests(requests_control, max_size)){
                     // conduct like it is 'drop tail' policy
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
                 }
             }
             /*
-            else if (strcmp(schedalg, "random"))
+            else if (!strcmp(schedalg, "random"))
             {
                 if (!requestManagerCanAcceptRequests(requests_control))
                 {
