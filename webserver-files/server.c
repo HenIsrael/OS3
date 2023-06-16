@@ -139,10 +139,11 @@ int main(int argc, char *argv[])
 
     getargs(&port, &threads, &queue_size, schedalg, &max_size,  argc, argv);
 
+    pthread_mutex_init(&Lock, NULL);
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
     pthread_cond_init(&NoFish, NULL);
-    pthread_mutex_init(&Lock, NULL);
+    
 
     requests_control = requestManagerCreate(0, queue_size);
     pool_initialization(threads);
@@ -257,11 +258,12 @@ int main(int argc, char *argv[])
         }
 
     }
-
+    pthread_mutex_destroy(&Lock);
     pthread_cond_destroy(&FullPool);
     pthread_cond_destroy(&EmptyPool);
     pthread_cond_destroy(&NoFish);
-    pthread_mutex_destroy(&Lock);
+    requestManagerDelete(requests_control);
+    
     // TODO : free pool of threads 
 }
 
