@@ -61,7 +61,7 @@ void* thread_routineHen(void* worker){
 
 
 
-void thread_routine (void* worker )
+void* thread_routine (void* worker )
 {
     WorkerThread* worker_act= (WorkerThread*)worker;
     while (1)
@@ -102,7 +102,7 @@ void pool_initialization(int threads){
     for (int i = 0; i < threads; i++){
 
         WorkerThread* worker = create_thread(i);
-        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routineHen, (void*)worker);
+        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine, (void*)worker);
         if (ans != 0){
             fprintf(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
             // TODO: maybe free worker?free pool? free locks?
