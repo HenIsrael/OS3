@@ -27,6 +27,7 @@ In order to run a single test file you can run
 ```
 python3 -m pytest -n auto <name_of_file.py>
 ```
+if not work=work;
 
 In order to run a single test function you can run
 
