@@ -83,7 +83,7 @@ void requestManagerAddReadyRequest(RequestManager requestManager, RequestObject 
     //todo: add only if there is enough room
     requestObjectUpdateDispatchTime(requestObject);
     listPushBack(requestManager->runningRequests, requestObject);
-//    deleteRequestObject(requestObject);///we are deleting the current r.o because the list copies it
+    //deleteRequestObject(requestObject);///we are deleting the current r.o because the list copies it //todo- check
 }
 
 void requestManagerRemoveFinishedRequest(RequestManager requestManager, RequestObject requestObject){

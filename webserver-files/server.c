@@ -59,7 +59,7 @@ void* thread_routineHen(void* worker){
 
 
 
-void thread_routine (void* worker )
+void* thread_routine (void* worker )
 {
     WorkerThread* worker_act= (WorkerThread*)worker;
     while (1)
@@ -100,7 +100,7 @@ void pool_initialization(int threads){
     for (int i = 0; i < threads; i++){
 
         WorkerThread* worker = create_thread(i);
-        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routineHen, (void*)worker);
+        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine , (void*)worker);
         if (ans != 0){
             fprintf(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
             // TODO: maybe free worker?free pool? free locks?
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
             pthread_mutex_unlock(&Lock);
         }
         else{
-            if (strcmp(schedalg, "block")) 
+            if (!strcmp(schedalg, "block")) 
             {
 
                 while (!requestManagerCanAcceptRequests(requests_control)){
@@ -186,12 +186,12 @@ int main(int argc, char *argv[])
                 pthread_cond_signal(&EmptyPool);
                 pthread_mutex_unlock(&Lock);
             }
-            else if (strcmp(schedalg, "dt")) // TODO: TALI THE QUEEN
+            else if (!strcmp(schedalg, "dt")) // TODO: TALI THE QUEEN
             {
                 close(connfd);
                 pthread_mutex_unlock(&Lock);
             }
-            else if (strcmp(schedalg, "dh")) 
+            else if (!strcmp(schedalg, "dh")) 
             {
                 if (!requestManagerCanAcceptRequests(requests_control)){
                 
@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
 
                 }
             }
-            else if (strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
+            else if (!strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
             {
                 close(connfd);
                 while ( listGetSize(requests_control->runningRequests)!= 0 )
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
                 }
                 pthread_mutex_unlock(&Lock);   
             }
-            else if (strcmp(schedalg, "dynamic")) 
+            else if (!strcmp(schedalg, "dynamic")) 
             {
                 if(requestManagerHasReachedItMaxRequests(requests_control, max_size)){
                     // conduct like it is 'drop tail' policy

@@ -10,7 +10,7 @@ test build: (not included in grades calculations)
 
 The following 21 tests have an equal weight, each passed test contributes 5 points to your grade out of 105, a maximal grade that one can get: 
 
-test basic:
+test basic: PASSED
  check if the webserver can serve requests
 
 test nobusywait:
@@ -40,7 +40,7 @@ test locks3:
 test locks4:
  sends many concurrent requests to test locking. server params: threads 25, Q_size 27. 20 clients each requesting ['/output.cgi?0.01', '/output.cgi?0.02', '/output.cgi?0.005'], 20 times
 
-test equal:
+test equal: PASSED
  equal buffers and threads server params: threads 8, Q_size 8. 20 clients each requesting ['/home.html', '/output.cgi?0.3', '/favicon.ico'], 10 times
 
 test equal2:

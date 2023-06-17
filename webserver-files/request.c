@@ -29,7 +29,7 @@ void requestError(int fd, char *cause, char *errnum, char *shortmsg, char *longm
    Rio_writen(fd, buf, strlen(buf));
    printf("%s", buf);
 
-   sprintf(buf, "Content-Length: %lu\r\n\r\n", strlen(body));
+   sprintf(buf, "Content-Length: %lu\r\n", strlen(body));
    Rio_writen(fd, buf, strlen(buf));
    printf("%s", buf);
 
@@ -40,6 +40,8 @@ void requestError(int fd, char *cause, char *errnum, char *shortmsg, char *longm
    sprintf(buf, "%sStat-Thread-Count:: %d\r\n", buf, worker->thread_count);
    sprintf(buf, "%sStat-Thread-Static:: %d\r\n", buf, worker->thread_static_count);
    sprintf(buf, "%sStat-Thread-Dynamic:: %d\r\n\r\n", buf, worker->thread_dynamic_count);
+   Rio_writen(fd, buf, strlen(buf));
+   printf("%s", buf);
 
    Rio_writen(fd, body, strlen(body));
    printf("%s", body);
@@ -126,7 +128,7 @@ void requestServeDynamic(int fd, char *filename, char *cgiargs, WorkerThread* wo
    sprintf(buf, "%sStat-Thread-Id:: %d\r\n", buf, worker->thread_id);
    sprintf(buf, "%sStat-Thread-Count:: %d\r\n", buf, worker->thread_count);
    sprintf(buf, "%sStat-Thread-Static:: %d\r\n", buf, worker->thread_static_count);
-   sprintf(buf, "%sStat-Thread-Dynamic:: %d\r\n\r\n", buf, worker->thread_dynamic_count);
+   sprintf(buf, "%sStat-Thread-Dynamic:: %d\r\n", buf, worker->thread_dynamic_count);
 
    Rio_writen(fd, buf, strlen(buf));
 
@@ -160,7 +162,7 @@ void requestServeStatic(int fd, char *filename, int filesize,  WorkerThread* wor
    sprintf(buf, "HTTP/1.0 200 OK\r\n");
    sprintf(buf, "%sServer: OS-HW3 Web Server\r\n", buf);
    sprintf(buf, "%sContent-Length: %d\r\n", buf, filesize);
-   sprintf(buf, "%sContent-Type: %s\r\n\r\n", buf, filetype);
+   sprintf(buf, "%sContent-Type: %s\r\n", buf, filetype);
    // TODO : add sprintf
    sprintf(buf, "%sStat-Req-Arrival:: %lu.%06lu\r\n", buf, arrival_time.tv_sec, arrival_time.tv_usec);
    sprintf(buf, "%sStat-Req-Dispatch:: %lu.%06lu\r\n", buf, dispatch_time.tv_sec, dispatch_time.tv_usec);
@@ -175,7 +177,6 @@ void requestServeStatic(int fd, char *filename, int filesize,  WorkerThread* wor
    //  Writes out to the client socket the memory-mapped file 
    Rio_writen(fd, srcp, filesize);
    Munmap(srcp, filesize);
-
 }
 
 // handle a request
