@@ -68,7 +68,6 @@ void* thread_routine (void* worker )
         while(!requestManagerHasWaitingRequests(requests_control)){
         pthread_cond_wait(&EmptyPool , &Lock);
         }
-        // קמתי לתחיה, אני רוצה למשוך משימה מהתור 
         RequestObject current_task = requestManagerGetReadyRequest(requests_control);
         requestManagerAddReadyRequest(requests_control, current_task);
 
@@ -135,29 +134,29 @@ void getargs(int *port, int *threads, int *queue_size, char *schedalg, int *max_
 
 int main(int argc, char *argv[])
 {
-    printf("start of main bitch\n");
+    //printf("start of main bitch\n");
     int listenfd, connfd, port, clientlen, threads, queue_size, max_size;
     char *schedalg = (char*)malloc(MAXSCHEDULINGLEN);
 
     struct sockaddr_in clientaddr;
 
-    printf("before getargs\n");
+    //printf("before getargs\n");
 
     getargs(&port, &threads, &queue_size, schedalg, &max_size,  argc, argv);
 
-    printf("what? getargs\n");
+    //printf("what? getargs\n");
 
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
     pthread_cond_init(&NoFish, NULL);
     pthread_mutex_init(&Lock, NULL);
 
-    printf("im here\n");
+    //printf("im here\n");
 
     requests_control = requestManagerCreate(0, queue_size);
     pool_initialization(threads);
 
-    printf("pool initialized\n");
+    //printf("pool initialized\n");
 
     listenfd = Open_listenfd(port);
     while (1) {
