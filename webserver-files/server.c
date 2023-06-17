@@ -2,6 +2,7 @@
 #include "request.h"
 #include "request_manager.h"
 #include "worker.h"
+#include "request_obj.h"
 
 #include <math.h>
 
@@ -55,6 +56,7 @@ void* thread_routineHen(void* worker){
         pthread_cond_signal(&FullPool);
         pthread_mutex_unlock(&Lock);
     }
+    return NULL;
 }
 
 
@@ -108,6 +110,12 @@ void pool_initialization(int threads){
     }
 }
 
+void queues_initialization(int queue_size)
+{
+    
+    requests_control = requestManagerCreate(0, queue_size);
+}
+
 
 
 
@@ -144,14 +152,10 @@ int main(int argc, char *argv[])
 
     getargs(&port, &threads, &queue_size, schedalg, &max_size,  argc, argv);
 
-    //printf("what? getargs\n");
-
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
     pthread_cond_init(&NoFish, NULL);
     pthread_mutex_init(&Lock, NULL);
-
-    //printf("im here\n");
 
     requests_control = requestManagerCreate(0, queue_size);
     pool_initialization(threads);
@@ -236,7 +240,7 @@ int main(int argc, char *argv[])
                 }
             }
             /*
-            else if (strcmp(schedalg, "random"))
+            else if (!strcmp(schedalg, "random"))
             {
                 if (!requestManagerCanAcceptRequests(requests_control))
                 {
@@ -268,11 +272,12 @@ int main(int argc, char *argv[])
         }
 
     }
-
+    pthread_mutex_destroy(&Lock);
     pthread_cond_destroy(&FullPool);
     pthread_cond_destroy(&EmptyPool);
     pthread_cond_destroy(&NoFish);
-    pthread_mutex_destroy(&Lock);
+    requestManagerDelete(requests_control);
+    
     // TODO : free pool of threads 
 }
 
