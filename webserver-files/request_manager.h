@@ -16,6 +16,7 @@ typedef struct request_manager_t{
 RequestManager requestManagerCreate(int threadsNum, int maxAcceptedRequests);
 int requestManagerGetWaitingQueueSize(RequestManager requestManager);
 int requestManagerHasWaitingRequests(RequestManager requestManager);
+int requestManagerHasRunningRequests(RequestManager requestManager);
 int requestManagerCanAcceptRequests(RequestManager requestManager);
 int requestManagerHasReachedItMaxRequests(RequestManager requestManager, int max_size);
 

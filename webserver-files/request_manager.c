@@ -49,6 +49,12 @@ int requestManagerHasWaitingRequests(RequestManager requestManager){
     return 0;
 }
 
+int requestManagerHasRunningRequests(RequestManager requestManager){
+    int size = listGetSize(requestManager->runningRequests);
+    if(size >= 1) return 1;
+    return 0;
+}
+
 int requestManagerCanAcceptRequests(RequestManager requestManager){
     int s1 = listGetSize(requestManager->waitingRequestsQueue);
     int s2 = listGetSize(requestManager->runningRequests);
