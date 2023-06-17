@@ -9,9 +9,9 @@
 #define MAXSCHEDULINGLEN 7
 
 pthread_mutex_t Lock;
-pthread_cond_t FullPool;  // for both waiting and running queues
-pthread_cond_t EmptyPool; // only for waiting requests queue
-pthread_cond_t NoFish;
+pthread_cond_t FullPool;    // for both waiting and running queues
+pthread_cond_t EmptyPool;  //  only for waiting requests queue
+pthread_cond_t NoFish;    //   only for running requests queue
 RequestManager requests_control;
 
 
@@ -85,10 +85,11 @@ void* thread_routine (void* worker )
 
         pthread_mutex_lock(&Lock);
         requestManagerRemoveFinishedRequest(requests_control, current_task);
-        if(listGetSize(requests_control->runningRequests)== 0)
-        {
+
+        if(!requestManagerHasRunningRequests(requests_control)){
             pthread_cond_signal(&NoFish);
         }
+
         pthread_cond_signal(&FullPool);
         pthread_mutex_unlock(&Lock);
     }
@@ -213,11 +214,13 @@ int main(int argc, char *argv[])
             }
             else if (!strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
             {
-                close(connfd);
-                while ( listGetSize(requests_control->runningRequests)!= 0 )
+                
+                while (requestManagerHasRunningRequests(requests_control))
                 {
                     pthread_cond_wait( &NoFish , &Lock);
                 }
+                
+                close(connfd);
                 pthread_mutex_unlock(&Lock);   
             }
             else if (!strcmp(schedalg, "dynamic")) 
