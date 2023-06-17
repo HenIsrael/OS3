@@ -126,26 +126,38 @@ void getargs(int *port, int *threads, int *queue_size, char *schedalg, int *max_
     *threads = atoi(argv[2]);
     *queue_size = atoi(argv[3]);
     strcpy(schedalg, argv[4]);
+    if(argc == 6)
+    {
     *max_size = atoi(argv[5]);
+    }
 }
 
 
 int main(int argc, char *argv[])
 {
+    printf("start of main bitch\n");
     int listenfd, connfd, port, clientlen, threads, queue_size, max_size;
     char *schedalg = (char*)malloc(MAXSCHEDULINGLEN);
 
     struct sockaddr_in clientaddr;
 
+    printf("before getargs\n");
+
     getargs(&port, &threads, &queue_size, schedalg, &max_size,  argc, argv);
+
+    printf("what? getargs\n");
 
     pthread_cond_init(&FullPool, NULL);
     pthread_cond_init(&EmptyPool, NULL);
     pthread_cond_init(&NoFish, NULL);
     pthread_mutex_init(&Lock, NULL);
 
+    printf("im here\n");
+
     requests_control = requestManagerCreate(0, queue_size);
     pool_initialization(threads);
+
+    printf("pool initialized\n");
 
     listenfd = Open_listenfd(port);
     while (1) {
