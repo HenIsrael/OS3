@@ -2,7 +2,8 @@
 #include "request.h"
 #include "request_manager.h"
 #include "worker.h"
-//#include "request_obj.h"
+
+#include <math.h>
 
 #define MAXSCHEDULINGLEN 7
 
@@ -99,7 +100,7 @@ void pool_initialization(int threads){
     for (int i = 0; i < threads; i++){
 
         WorkerThread* worker = create_thread(i);
-        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routine, (void*)worker);
+        int ans = pthread_create(&(threads_pool[i]), NULL, &thread_routineHen, (void*)worker);
         if (ans != 0){
             fprintf(stderr, "pthread_create failed\n"); // TODO: check if message is OK 
             // TODO: maybe free worker?free pool? free locks?
@@ -223,6 +224,7 @@ int main(int argc, char *argv[])
                     pthread_mutex_unlock(&Lock);
                 }
             }
+            /*
             else if (strcmp(schedalg, "random"))
             {
                 if (!requestManagerCanAcceptRequests(requests_control))
@@ -250,6 +252,7 @@ int main(int argc, char *argv[])
                 }
             
             }
+            */
             
         }
 
