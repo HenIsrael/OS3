@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 
         pthread_mutex_lock(&Lock);
         if(requestsHandlerCanAcceptRequests(requests_control)){
-            Request fish_request = createRequestObject(connfd);
+            Request fish_request = createRequest(connfd);
             addPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
             pthread_mutex_unlock(&Lock);
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
                     pthread_cond_wait(&FullPool, &Lock);
                 }
 
-                Request fish_request = createRequestObject(connfd);
+                Request fish_request = createRequest(connfd);
                 addPendingRequest(requests_control, fish_request);
                 pthread_cond_signal(&EmptyPool);
                 pthread_mutex_unlock(&Lock);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 
                     int old_req_fd = removeOldestWaitingRequest(requests_control);
                     Close(old_req_fd);
-                    Request fish_request = createRequestObject(connfd);
+                    Request fish_request = createRequest(connfd);
                     addPendingRequest(requests_control, fish_request);
                     pthread_cond_signal(&EmptyPool);
                     pthread_mutex_unlock(&Lock);
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
                         Close(rand_fish_request->val);
                     }
 
-                    Request fish_request = createRequestObject(connfd);
+                    Request fish_request = createRequest(connfd);
                     addPendingRequest(requests_control, fish_request);
                     pthread_cond_signal(&EmptyPool);
                     pthread_mutex_unlock(&Lock);
