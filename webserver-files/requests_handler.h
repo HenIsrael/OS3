@@ -9,11 +9,10 @@ typedef struct request_manager_t{
     List waitingRequestsQueue;
 
     int maxAcceptedRequests;
-    int threadsNum;//todo: remove
 
 }*RequestManager;
 
-RequestManager createRequestsHandler(int threadsNum, int maxAcceptedRequests);
+RequestManager createRequestsHandler(int maxAcceptedRequests);
 int countWaitingQueue(RequestManager requestManager);
 int waitingQueueIsEmpty(RequestManager requestManager);
 int runningQueueIsEmpty(RequestManager requestManager);

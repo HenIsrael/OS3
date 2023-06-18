@@ -112,14 +112,9 @@ void pool_initialization(int threads){
     }
 }
 
-void queues_initialization(int queue_size)
-{
-    
-    requests_control = createRequestsHandler(0, queue_size);
+void queues_initialization(int queue_size){
+    requests_control = createRequestsHandler(queue_size);
 }
-
-
-
 
 
 // -------------------- end of cool functions -------------------- //

@@ -20,22 +20,24 @@ void printData(void*data){
     printf("|request id = %d| --> ",requestObject->val);
 }
 
-RequestManager createRequestsHandler(int threadsNum, int maxAcceptedRequests){
-    RequestManager requestManager = malloc(sizeof (*requestManager));
-    requestManager->runningRequests = listCreate(copyData, compareData, freeData, printData);
-    if(requestManager->runningRequests == NULL){
-        free(requestManager);
+RequestManager createRequestsHandler(int maxAcceptedRequests){
+    RequestManager requestsHandler = malloc(sizeof (*requestsHandler));
+    requestsHandler->runningRequests = listCreate(copyData, compareData, freeData, printData);
+    
+    if(requestsHandler->runningRequests == NULL){
+        free(requestsHandler);
         return NULL;
     }
-    requestManager->waitingRequestsQueue = listCreate(copyData, compareData, freeData, printData);
-    if(requestManager->waitingRequestsQueue == NULL){
-        listDelete(requestManager->runningRequests);
-        free(requestManager);
+    requestsHandler->waitingRequestsQueue = listCreate(copyData, compareData, freeData, printData);
+
+    if(requestsHandler->waitingRequestsQueue == NULL){
+        listDelete(requestsHandler->runningRequests);
+        free(requestsHandler);
         return NULL;
     }
-    requestManager->threadsNum = threadsNum;
-    requestManager->maxAcceptedRequests = maxAcceptedRequests;
-    return requestManager;
+
+    requestsHandler->maxAcceptedRequests = maxAcceptedRequests;
+    return requestsHandler;
 }
 
 int countWaitingQueue(RequestManager requestManager){
