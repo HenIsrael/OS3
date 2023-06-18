@@ -1,33 +1,35 @@
 #include "request_obj.h"
 #include "stdlib.h"
 
-Request createRequestObject(int val){
-    Request requestObject = malloc(sizeof (*requestObject));
-    if(requestObject == NULL)
-        return requestObject;
-    requestObject->val = val;
-    gettimeofday(&(requestObject->time_arrive),NULL);
-    return requestObject;
+Request createRequest(int val){
+    Request request = malloc(sizeof (*request));
+    if(request == NULL)
+        return request;
+    request->val = val;
+    gettimeofday(&(request->time_arrive),NULL);
+    return request;
 }
 
-Request copyRequestObject(Request requestObject){
-    Request requestObject1 = createRequestObject(requestObject->val);
-    requestObject1->time_arrive.tv_sec = requestObject->time_arrive.tv_sec;
-    requestObject1->time_arrive.tv_usec = requestObject->time_arrive.tv_usec;
+Request copyRequest(Request request){
+    Request request_copy = createRequest(request->val);
+    request_copy->time_arrive.tv_sec = request->time_arrive.tv_sec;
+    request_copy->time_arrive.tv_usec = request->time_arrive.tv_usec;
 
-    requestObject1->disp.tv_sec = requestObject->disp.tv_sec;
-    requestObject1->disp.tv_usec = requestObject->disp.tv_usec;
-    return requestObject1;
+    request_copy->disp.tv_sec = request->disp.tv_sec;
+    request_copy->disp.tv_usec = request->disp.tv_usec;
+    return request_copy;
 }
 
-int compareRequestObject(Request requestObject1, Request requestObject2){
-    if(requestObject1->val > requestObject2->val) return 1;
-    if(requestObject1->val == requestObject2->val) return 0;
+int compareRequests(Request request1, Request request2){
+    if(request1->val > request2->val)
+        return 1;
+    if(request1->val == request2->val)
+        return 0;
     return -1;
 }
 
-void deleteRequestObject(Request requestObject){
-    free(requestObject);
+void deleteRequest(Request request){
+    free(request);
 }
 
 void dispTime( struct timeval *start, struct timeval *finish,struct timeval *ans)
@@ -55,8 +57,8 @@ void dispTime( struct timeval *start, struct timeval *finish,struct timeval *ans
     }
 }
 
-void requestObjectUpdateDispatchTime(Request requestObject){
+void updateDispatchTime(Request request){
     struct timeval time_now;
     gettimeofday(&time_now,NULL);
-    dispTime(&(requestObject->time_arrive),&time_now,&(requestObject->disp));
+    dispTime(&(request->time_arrive),&time_now,&(request->disp));
 }

@@ -3,16 +3,16 @@
 
 void *copyData(void *data)
 {
-    return copyRequestObject((Request)data);
+    return copyRequest((Request)data);
 }
 
 int compareData(Data data1, Data data2){
-    return compareRequestObject((Request)data1, (Request)data2);
+    return compareRequests((Request)data1, (Request)data2);
 }
 
 void freeData(void *data)
 {
-    deleteRequestObject((Request)data);
+    deleteRequest((Request)data);
 }
 
 void printData(void*data){
@@ -20,8 +20,8 @@ void printData(void*data){
     printf("|request id = %d| --> ",requestObject->val);
 }
 
-RequestManager createRequestsHandler(int maxAcceptedRequests){
-    RequestManager requestsHandler = malloc(sizeof (*requestsHandler));
+RequestsHandler createRequestsHandler(int maxAcceptedRequests){
+    RequestsHandler requestsHandler = malloc(sizeof (*requestsHandler));
     requestsHandler->runningRequests = listCreate(copyData, compareData, freeData, printData);
 
     if(requestsHandler->runningRequests == NULL){
@@ -40,96 +40,96 @@ RequestManager createRequestsHandler(int maxAcceptedRequests){
     return requestsHandler;
 }
 
-int countWaitingQueue(RequestManager requestManager){
-    int size = listGetSize(requestManager->waitingRequestsQueue);
+int countWaitingQueue(RequestsHandler requestsHandler){
+    int size = listGetSize(requestsHandler->waitingRequestsQueue);
     return size;
 }
 
-int waitingQueueIsEmpty(RequestManager requestManager){
-    int size = listGetSize(requestManager->waitingRequestsQueue);
+int waitingQueueIsEmpty(RequestsHandler requestsHandler){
+    int size = listGetSize(requestsHandler->waitingRequestsQueue);
     if(size >= 1) return 0;
     return 1;
 }
 
-int runningQueueIsEmpty(RequestManager requestManager){
-    int size = listGetSize(requestManager->runningRequests);
+int runningQueueIsEmpty(RequestsHandler requestsHandler){
+    int size = listGetSize(requestsHandler->runningRequests);
     if(size >= 1)
         return 0;
     return 1;
 }
 
-int requestsHandlerCanAcceptRequests(RequestManager requestManager){
+int requestsHandlerCanAcceptRequests(RequestsHandler requestsHandler){
 
-    int running = listGetSize(requestManager->runningRequests);
-    int waiting = listGetSize(requestManager->waitingRequestsQueue);
+    int running = listGetSize(requestsHandler->runningRequests);
+    int waiting = listGetSize(requestsHandler->waitingRequestsQueue);
     
-    if(requestManager->maxAcceptedRequests > waiting + running)
+    if(requestsHandler->maxAcceptedRequests > waiting + running)
         return 1;
     return 0;
 }
 
-int requestsHandlerHasReachedItMaxRequests(RequestManager requestManager, int max_size){
+int requestsHandlerHasReachedItMaxRequests(RequestsHandler requestsHandler, int max_size){
 
-    int running = listGetSize(requestManager->runningRequests);
-    int waiting = listGetSize(requestManager->waitingRequestsQueue);
+    int running = listGetSize(requestsHandler->runningRequests);
+    int waiting = listGetSize(requestsHandler->waitingRequestsQueue);
 
     if(running + waiting < max_size)
         return 0;
     return 1;
 }
 
-Request getReadyRequest(RequestManager requestManager){
-    int waiting = listGetSize(requestManager->waitingRequestsQueue);
+Request getReadyRequest(RequestsHandler requestsHandler){
+    int waiting = listGetSize(requestsHandler->waitingRequestsQueue);
     if(waiting == 0)
         return NULL;
-    Request ready = listPopFront(requestManager->waitingRequestsQueue);
+    Request ready = listPopFront(requestsHandler->waitingRequestsQueue);
     return ready;
 }
 
-void addPendingRequest(RequestManager requestManager, Request requestObject) {
+void addPendingRequest(RequestsHandler requestsHandler, Request request) {
 
-    listPushBack(requestManager->waitingRequestsQueue, requestObject);
+    listPushBack(requestsHandler->waitingRequestsQueue, request);
     // a request copy pushed for waiting queue
     // need to delete the original
-    deleteRequestObject(requestObject); 
+    deleteRequest(request); 
 }
 
-void addReadyRequest(RequestManager requestManager, Request requestObject){
-    requestObjectUpdateDispatchTime(requestObject);
-    listPushBack(requestManager->runningRequests, requestObject);
+void addReadyRequest(RequestsHandler requestsHandler, Request request){
+    updateDispatchTime(request);
+    listPushBack(requestsHandler->runningRequests, request);
 }
 
-void removeFinishedRequest(RequestManager requestManager, Request requestObject){
-    Request request_tmp = createRequestObject(-2);
-    listRemoveAtData(requestManager->runningRequests,requestObject,(void**)(&request_tmp));
-    deleteRequestObject(request_tmp);
-    deleteRequestObject(requestObject);
+void removeFinishedRequest(RequestsHandler requestsHandler, Request request){
+    Request request_tmp = createRequest(-2);
+    listRemoveAtData(requestsHandler->runningRequests,request,(void**)(&request_tmp));
+    deleteRequest(request_tmp);
+    deleteRequest(request);
 }
 
-Request removeWaitingRequestAt(RequestManager requestManager, int index) {
-    Request request_tmp = createRequestObject(-2);
-    listRemoveAtIndex(requestManager->waitingRequestsQueue, index, (void**)(&request_tmp));
+Request removeWaitingRequestAt(RequestsHandler requestsHandler, int index) {
+    Request request_tmp = createRequest(-2);
+    listRemoveAtIndex(requestsHandler->waitingRequestsQueue, index, (void**)(&request_tmp));
     return request_tmp;
 }
 
-Request removeRandWaitingRequest(RequestManager requestManager){
-   int rand_index_from_waiting = rand() % countWaitingQueue(requestManager);
-   return removeWaitingRequestAt(requestManager, rand_index_from_waiting);
+Request removeRandWaitingRequest(RequestsHandler requestsHandler){
+   int rand_index_from_waiting = rand() % countWaitingQueue(requestsHandler);
+   return removeWaitingRequestAt(requestsHandler, rand_index_from_waiting);
 }
 
-int removeOldestWaitingRequest(RequestManager requestManager) {
-    Request oldest = listPopFront(requestManager->waitingRequestsQueue);
+int removeOldestWaitingRequest(RequestsHandler requestsHandler) {
+    Request oldest = listPopFront(requestsHandler->waitingRequestsQueue);
     int fd = oldest->val;
-    deleteRequestObject(oldest);
+    deleteRequest(oldest);
     return fd;
 }
 
-void enlargeMaxAcceptedRequests(RequestManager requestManager){
-    requestManager->maxAcceptedRequests = requestManager->maxAcceptedRequests + 1;
+void enlargeMaxAcceptedRequests(RequestsHandler requestsHandler){
+    requestsHandler->maxAcceptedRequests = requestsHandler->maxAcceptedRequests + 1;
 }
 
-void requestHandlerDelete(RequestManager requestManager){
-    listDelete(requestManager->waitingRequestsQueue);
-    listDelete(requestManager->runningRequests);
-    free(requestManager);
+void requestHandlerDelete(RequestsHandler requestsHandler){
+    listDelete(requestsHandler->waitingRequestsQueue);
+    listDelete(requestsHandler->runningRequests);
+    free(requestsHandler);
 }

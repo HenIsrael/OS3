@@ -7,13 +7,13 @@ typedef struct request_object_t{
     int val;
     struct timeval time_arrive;
     struct timeval disp;
-}*RequestObject;
+}*Request;
 
-RequestObject createRequestObject(int val);
-RequestObject copyRequestObject(RequestObject requestObject);
+Request createRequest(int val);
+Request copyRequest(Request request);
 
-int compareRequestObject(RequestObject requestObject1, RequestObject requestObject2);
-void deleteRequestObject(RequestObject requestObject);
-void requestObjectUpdateDispatchTime(RequestObject requestObject);
+int compareRequests(Request request1, Request request2);
+void deleteRequest(Request request);
+void updateDispatchTime(Request request);
 
 #endif //REQUEST_OBJECT_H

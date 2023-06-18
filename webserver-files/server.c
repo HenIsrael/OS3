@@ -12,7 +12,7 @@ pthread_mutex_t Lock;
 pthread_cond_t FullPool;    // for both waiting and running queues
 pthread_cond_t EmptyPool;  //  only for waiting requests queue
 pthread_cond_t NoFish;    //   only for running requests queue
-RequestManager requests_control;
+RequestsHandler requests_control;
 
 
 // 

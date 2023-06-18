@@ -10,26 +10,27 @@ typedef struct request_manager_t{
 
     int maxAcceptedRequests;
 
-}*RequestManager;
+}*RequestsHandler;
 
-RequestManager createRequestsHandler(int maxAcceptedRequests);
-int countWaitingQueue(RequestManager requestManager);
-int waitingQueueIsEmpty(RequestManager requestManager);
-int runningQueueIsEmpty(RequestManager requestManager);
-int requestsHandlerCanAcceptRequests(RequestManager requestManager);
-int requestsHandlerHasReachedItMaxRequests(RequestManager requestManager, int max_size);
-
-void addReadyRequest(RequestManager requestManager, Request requestObject);
-Request getReadyRequest(RequestManager requestManager);
-void addPendingRequest(RequestManager requestManager, Request requestObject);
-void enlargeMaxAcceptedRequests(RequestManager requestManager);
+RequestsHandler createRequestsHandler(int maxAcceptedRequests);
+int countWaitingQueue(RequestsHandler RequestsHandler);
+int waitingQueueIsEmpty(RequestsHandler RequestsHandler);
+int runningQueueIsEmpty(RequestsHandler RequestsHandler);
+int requestsHandlerCanAcceptRequests(RequestsHandler RequestsHandler);
+int requestsHandlerHasReachedItMaxRequests(RequestsHandler RequestsHandler, int max_size);
 
 
-void removeFinishedRequest(RequestManager requestManager, Request requestObject);
-Request removeWaitingRequestAt(RequestManager requestManager, int index);
-Request removeRandWaitingRequest(RequestManager requestManager);
-int removeOldestWaitingRequest(RequestManager requestManager);
+void addReadyRequest(RequestsHandler RequestsHandler, Request request);
+Request getReadyRequest(RequestsHandler RequestsHandler);
+void addPendingRequest(RequestsHandler RequestsHandler, Request request);
+void enlargeMaxAcceptedRequests(RequestsHandler RequestsHandler);
 
-void requestHandlerDelete(RequestManager requestManager);
+
+void removeFinishedRequest(RequestsHandler RequestsHandler, Request request);
+Request removeWaitingRequestAt(RequestsHandler RequestsHandler, int index);
+Request removeRandWaitingRequest(RequestsHandler RequestsHandler);
+int removeOldestWaitingRequest(RequestsHandler RequestsHandler);
+
+void requestHandlerDelete(RequestsHandler RequestsHandler);
 
 #endif //_REQUEST_HANDLER_H
