@@ -99,13 +99,6 @@ void requestManagerRemoveFinishedRequest(RequestManager requestManager, RequestO
     deleteRequestObject(requestObject);
 }
 
-void requestManagerRemoveRequestFromWaitingQueue(RequestManager requestManager, RequestObject requestObject){
-    RequestObject requestObject1 = createRequestObject(-2);
-    listRemoveAtData(requestManager->waitingRequestsQueue,requestObject,(void**)(&requestObject1));
-    deleteRequestObject(requestObject1);
-    deleteRequestObject(requestObject);
-}
-
 RequestObject requestManagerRemoveRequestFromWaitingQueueAtIndex(RequestManager requestManager, int index) {
     RequestObject requestObject1 = createRequestObject(-2);
     listRemoveAtIndex(requestManager->waitingRequestsQueue, index, (void**)(&requestObject1));
@@ -132,18 +125,4 @@ void requestManagerDelete(RequestManager requestManager){
     listDelete(requestManager->waitingRequestsQueue);
     listDelete(requestManager->runningRequests);
     free(requestManager);
-}
-
-
-void requestManagerPrint(RequestManager requestManager){
-    printf("\n------------------------------------------------\n");
-    printf("requestManager->maxAcceptedRequests: %d\n", requestManager->maxAcceptedRequests);
-    int ws = listGetSize(requestManager->waitingRequestsQueue);
-    int rs = listGetSize(requestManager->runningRequests);
-    printf("waiting requests: %d,running requests: %d\n", ws, rs);
-    printf("waiting list:  ");
-    listPrint(requestManager->waitingRequestsQueue);
-    printf("running list:  ");
-    listPrint(requestManager->runningRequests);
-    printf("\n------------------------------------------------\n");
 }

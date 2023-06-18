@@ -25,7 +25,7 @@ RequestObject requestManagerGetReadyRequest(RequestManager requestManager);//tod
 void requestManagerAddPendingRequest(RequestManager requestManager, RequestObject requestObject);//todo: return status instead
 void requestManagerAddReadyRequest(RequestManager requestManager, RequestObject requestObject);//todo: return status instead
 void requestManagerRemoveFinishedRequest(RequestManager requestManager, RequestObject requestObject);//todo: return status instead
-void requestManagerRemoveRequestFromWaitingQueue(RequestManager requestManager, RequestObject requestObject);//todo: return status instead
+
 
 RequestObject requestManagerRemoveRequestFromWaitingQueueAtIndex(RequestManager requestManager, int index);//todo: return status instead
 RequestObject requestManagerRemovRandRequestFromWaitingQueue(RequestManager requestManager);
@@ -35,6 +35,4 @@ int requestManagerRemoveOldestRequestFromWaitingQueue(RequestManager requestMana
 void requestManagerEnlargeMaxAcceptedRequests(RequestManager requestManager);
 void requestManagerDelete(RequestManager requestManager);
 
-
-void requestManagerPrint(RequestManager requestManager);
 #endif //_REQUEST_MANAGER_H
