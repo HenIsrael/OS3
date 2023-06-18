@@ -1,6 +1,6 @@
 #include "segel.h"
 #include "request.h"
-#include "request_manager.h"
+#include "requests_handler.h"
 #include "worker.h"
 #include "request_obj.h"
 
@@ -36,12 +36,12 @@ void* thread_routineHen(void* worker){
 
     while(1){
         pthread_mutex_lock(&Lock);
-        while(!requestManagerHasWaitingRequests(requests_control)){
+        while(waitingQueueIsEmpty(requests_control)){
             pthread_cond_wait(&EmptyPool, &Lock);
         }
 
-        RequestObject request_ready = requestManagerGetReadyRequest(requests_control);
-        requestManagerAddReadyRequest(requests_control, request_ready);
+        RequestObject request_ready = getReadyRequest(requests_control);
+        addReadyRequest(requests_control, request_ready);
 
         int fd = request_ready->val;
         struct timeval arrive = request_ready->time_arrive;
@@ -52,7 +52,7 @@ void* thread_routineHen(void* worker){
 	    Close(fd);
 
         pthread_mutex_lock(&Lock);
-        requestManagerRemoveFinishedRequest(requests_control, request_ready);
+        removeFinishedRequest(requests_control, request_ready);
         pthread_cond_signal(&FullPool);
         pthread_mutex_unlock(&Lock);
     }
@@ -67,12 +67,12 @@ void* thread_routine (void* worker )
     while (1)
     {
         pthread_mutex_lock(&Lock);
-        while(!requestManagerHasWaitingRequests(requests_control)){
+        while(waitingQueueIsEmpty(requests_control)){
         pthread_cond_wait(&EmptyPool , &Lock);
         }
         // קמתי לתחיה, אני רוצה למשוך משימה מהתור 
-        RequestObject current_task = requestManagerGetReadyRequest(requests_control);
-        requestManagerAddReadyRequest(requests_control, current_task);
+        RequestObject current_task = getReadyRequest(requests_control);
+        addReadyRequest(requests_control, current_task);
 
         struct timeval arrive = current_task->time_arrive;
         struct timeval disp = current_task->disp;
@@ -84,9 +84,9 @@ void* thread_routine (void* worker )
         Close(soc_fd);
 
         pthread_mutex_lock(&Lock);
-        requestManagerRemoveFinishedRequest(requests_control, current_task);
+        removeFinishedRequest(requests_control, current_task);
 
-        if(!requestManagerHasRunningRequests(requests_control)){
+        if(runningQueueIsEmpty(requests_control)){
             pthread_cond_signal(&NoFish);
         }
 
@@ -115,7 +115,7 @@ void pool_initialization(int threads){
 void queues_initialization(int queue_size)
 {
     
-    requests_control = requestManagerCreate(0, queue_size);
+    requests_control = createRequestsHandler(0, queue_size);
 }
 
 
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *) &clientlen);
 
         pthread_mutex_lock(&Lock);
-        if(requestManagerCanAcceptRequests(requests_control)){
+        if(requestsHandlerCanAcceptRequests(requests_control)){
             RequestObject fish_request = createRequestObject(connfd);
             requestManagerAddPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
             if (!strcmp(schedalg, "block")) 
             {
 
-                while (!requestManagerCanAcceptRequests(requests_control)){
+                while (!requestsHandlerCanAcceptRequests(requests_control)){
                 
                     pthread_cond_wait(&FullPool, &Lock);
                 }
@@ -192,9 +192,9 @@ int main(int argc, char *argv[])
             }
             else if (!strcmp(schedalg, "dh")) 
             {
-                if (!requestManagerCanAcceptRequests(requests_control)){
+                if (!requestsHandlerCanAcceptRequests(requests_control)){
                 
-                    if (!requestManagerHasWaitingRequests(requests_control)){
+                    if (waitingQueueIsEmpty(requests_control)){
                         // case no waiting requests
                         // do nothing
                     
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
                         continue;
                     }
 
-                    int old_req_fd = requestManagerRemoveOldestRequestFromWaitingQueue(requests_control);
+                    int old_req_fd = removeOldestWaitingRequest(requests_control);
                     Close(old_req_fd);
                     RequestObject fish_request = createRequestObject(connfd);
                     requestManagerAddPendingRequest(requests_control, fish_request);
@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
             else if (!strcmp(schedalg, "bf")) // TODO: TALI THE QUEEN
             {
                 
-                while (requestManagerHasRunningRequests(requests_control))
+                while (!runningQueueIsEmpty(requests_control))
                 {
                     pthread_cond_wait( &NoFish , &Lock);
                 }
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
             }
             else if (!strcmp(schedalg, "dynamic")) 
             {
-                if(requestManagerHasReachedItMaxRequests(requests_control, max_size)){
+                if(requestsHandlerHasReachedItMaxRequests(requests_control, max_size)){
                     // conduct like it is 'drop tail' policy
                     Close(connfd);
                     pthread_mutex_unlock(&Lock);
@@ -233,16 +233,16 @@ int main(int argc, char *argv[])
                 }
                 else{
                     Close(connfd);
-                    requestManagerEnlargeMaxAcceptedRequests(requests_control);
+                    enlargeMaxAcceptedRequests(requests_control);
                     pthread_mutex_unlock(&Lock);
                 }
             }
             
             else if (!strcmp(schedalg, "random"))
             {
-                if (!requestManagerCanAcceptRequests(requests_control))
+                if (!requestsHandlerCanAcceptRequests(requests_control))
                 {
-                    if(!requestManagerHasWaitingRequests(requests_control)){
+                    if(waitingQueueIsEmpty(requests_control)){
                         // case no waiting requests
                         // do nothing
                     
@@ -251,10 +251,10 @@ int main(int argc, char *argv[])
                         continue;
                     }
 
-                    double num_to_delete = ceil(((((double) requestManagerGetWaitingQueueSize(requests_control)) / 2)));
+                    double num_to_delete = ceil(((((double) countWaitingQueue(requests_control)) / 2)));
                     for (int i = 0; i < num_to_delete; i++) {
                         //remove randomly half of the waiting requests
-                        RequestObject rand_fish_request = requestManagerRemovRandRequestFromWaitingQueue(requests_control);
+                        RequestObject rand_fish_request = removeRandWaitingRequest(requests_control);
                         Close(rand_fish_request->val);
                     }
 
@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
     pthread_cond_destroy(&FullPool);
     pthread_cond_destroy(&EmptyPool);
     pthread_cond_destroy(&NoFish);
-    requestManagerDelete(requests_control);
+    requestHandlerDelete(requests_control);
     
     // TODO : free pool of threads 
 }

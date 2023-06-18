@@ -3,6 +3,7 @@
         "request_manager.h": "c",
         "request.h": "c",
         "segel.h": "c",
-        "worker.h": "c"
+        "worker.h": "c",
+        "request_obj.h": "c"
     }
 }
