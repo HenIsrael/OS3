@@ -1,8 +1,8 @@
 #include "request_obj.h"
 #include "stdlib.h"
 
-RequestObject createRequestObject(int val){
-    RequestObject requestObject = malloc(sizeof (*requestObject));
+Request createRequestObject(int val){
+    Request requestObject = malloc(sizeof (*requestObject));
     if(requestObject == NULL)
         return requestObject;
     requestObject->val = val;
@@ -10,8 +10,8 @@ RequestObject createRequestObject(int val){
     return requestObject;
 }
 
-RequestObject copyRequestObject(RequestObject requestObject){
-    RequestObject requestObject1 = createRequestObject(requestObject->val);
+Request copyRequestObject(Request requestObject){
+    Request requestObject1 = createRequestObject(requestObject->val);
     requestObject1->time_arrive.tv_sec = requestObject->time_arrive.tv_sec;
     requestObject1->time_arrive.tv_usec = requestObject->time_arrive.tv_usec;
 
@@ -20,13 +20,13 @@ RequestObject copyRequestObject(RequestObject requestObject){
     return requestObject1;
 }
 
-int compareRequestObject(RequestObject requestObject1, RequestObject requestObject2){
+int compareRequestObject(Request requestObject1, Request requestObject2){
     if(requestObject1->val > requestObject2->val) return 1;
     if(requestObject1->val == requestObject2->val) return 0;
     return -1;
 }
 
-void deleteRequestObject(RequestObject requestObject){
+void deleteRequestObject(Request requestObject){
     free(requestObject);
 }
 
@@ -55,7 +55,7 @@ void dispTime( struct timeval *start, struct timeval *finish,struct timeval *ans
     }
 }
 
-void requestObjectUpdateDispatchTime(RequestObject requestObject){
+void requestObjectUpdateDispatchTime(Request requestObject){
     struct timeval time_now;
     gettimeofday(&time_now,NULL);
     dispTime(&(requestObject->time_arrive),&time_now,&(requestObject->disp));

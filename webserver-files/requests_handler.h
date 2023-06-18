@@ -19,15 +19,15 @@ int runningQueueIsEmpty(RequestManager requestManager);
 int requestsHandlerCanAcceptRequests(RequestManager requestManager);
 int requestsHandlerHasReachedItMaxRequests(RequestManager requestManager, int max_size);
 
-void addReadyRequest(RequestManager requestManager, RequestObject requestObject);
-RequestObject getReadyRequest(RequestManager requestManager);
-void addPendingRequest(RequestManager requestManager, RequestObject requestObject);
+void addReadyRequest(RequestManager requestManager, Request requestObject);
+Request getReadyRequest(RequestManager requestManager);
+void addPendingRequest(RequestManager requestManager, Request requestObject);
 void enlargeMaxAcceptedRequests(RequestManager requestManager);
 
 
-void removeFinishedRequest(RequestManager requestManager, RequestObject requestObject);
-RequestObject removeWaitingRequestAt(RequestManager requestManager, int index);
-RequestObject removeRandWaitingRequest(RequestManager requestManager);
+void removeFinishedRequest(RequestManager requestManager, Request requestObject);
+Request removeWaitingRequestAt(RequestManager requestManager, int index);
+Request removeRandWaitingRequest(RequestManager requestManager);
 int removeOldestWaitingRequest(RequestManager requestManager);
 
 void requestHandlerDelete(RequestManager requestManager);

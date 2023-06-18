@@ -40,7 +40,7 @@ void* thread_routineHen(void* worker){
             pthread_cond_wait(&EmptyPool, &Lock);
         }
 
-        RequestObject request_ready = getReadyRequest(requests_control);
+        Request request_ready = getReadyRequest(requests_control);
         addReadyRequest(requests_control, request_ready);
 
         int fd = request_ready->val;
@@ -71,7 +71,7 @@ void* thread_routine (void* worker )
         pthread_cond_wait(&EmptyPool , &Lock);
         }
         // קמתי לתחיה, אני רוצה למשוך משימה מהתור 
-        RequestObject current_task = getReadyRequest(requests_control);
+        Request current_task = getReadyRequest(requests_control);
         addReadyRequest(requests_control, current_task);
 
         struct timeval arrive = current_task->time_arrive;
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 
         pthread_mutex_lock(&Lock);
         if(requestsHandlerCanAcceptRequests(requests_control)){
-            RequestObject fish_request = createRequestObject(connfd);
+            Request fish_request = createRequestObject(connfd);
             addPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
             pthread_mutex_unlock(&Lock);
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
                     pthread_cond_wait(&FullPool, &Lock);
                 }
 
-                RequestObject fish_request = createRequestObject(connfd);
+                Request fish_request = createRequestObject(connfd);
                 addPendingRequest(requests_control, fish_request);
                 pthread_cond_signal(&EmptyPool);
                 pthread_mutex_unlock(&Lock);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 
                     int old_req_fd = removeOldestWaitingRequest(requests_control);
                     Close(old_req_fd);
-                    RequestObject fish_request = createRequestObject(connfd);
+                    Request fish_request = createRequestObject(connfd);
                     addPendingRequest(requests_control, fish_request);
                     pthread_cond_signal(&EmptyPool);
                     pthread_mutex_unlock(&Lock);
@@ -249,11 +249,11 @@ int main(int argc, char *argv[])
                     double num_to_delete = ceil(((((double) countWaitingQueue(requests_control)) / 2)));
                     for (int i = 0; i < num_to_delete; i++) {
                         //remove randomly half of the waiting requests
-                        RequestObject rand_fish_request = removeRandWaitingRequest(requests_control);
+                        Request rand_fish_request = removeRandWaitingRequest(requests_control);
                         Close(rand_fish_request->val);
                     }
 
-                    RequestObject fish_request = createRequestObject(connfd);
+                    Request fish_request = createRequestObject(connfd);
                     addPendingRequest(requests_control, fish_request);
                     pthread_cond_signal(&EmptyPool);
                     pthread_mutex_unlock(&Lock);
