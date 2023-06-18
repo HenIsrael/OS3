@@ -50,14 +50,6 @@ void dispTime( struct timeval *start, struct timeval *finish,struct timeval *ans
 
     timersub(finish, start, ans);
 
-    //ans->tv_sec = finish->tv_sec - start->tv_sec;
-    //ans->tv_usec = finish->tv_usec - start->tv_usec;
-
-    if (ans->tv_usec< 0)
-    {
-        ans->tv_usec += 1000000;
-        ans->tv_sec--;
-    }
 }
 
 void updateDispatchTime(Request request){
