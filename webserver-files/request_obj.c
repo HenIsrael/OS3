@@ -35,7 +35,7 @@ void deleteRequest(Request request){
 
 void dispTime( struct timeval *start, struct timeval *finish,struct timeval *ans)
 {
-
+    /*
     if (finish->tv_usec > 999999)
     {
         finish->tv_sec += finish->tv_usec / 1000000;
@@ -47,7 +47,7 @@ void dispTime( struct timeval *start, struct timeval *finish,struct timeval *ans
         start->tv_sec += start->tv_usec / 1000000;
         start->tv_usec %= 1000000;
     }
-
+    */
     timersub(finish, start, ans);
 
 }

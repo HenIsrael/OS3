@@ -158,9 +158,11 @@ int main(int argc, char *argv[])
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, (socklen_t *) &clientlen);
 
+        Request fish_request = createRequest(connfd);
+
         pthread_mutex_lock(&Lock);
         if(requestsHandlerCanAcceptRequests(requests_control)){
-            Request fish_request = createRequest(connfd);
+            //Request fish_request = createRequest(connfd);
             addPendingRequest(requests_control, fish_request);
             pthread_cond_signal(&EmptyPool);
             pthread_mutex_unlock(&Lock);
@@ -168,13 +170,14 @@ int main(int argc, char *argv[])
         else{
             if (!strcmp(schedalg, "block")) 
             {
+                Request fish_request = createRequest(connfd);
 
                 while (!requestsHandlerCanAcceptRequests(requests_control)){
                 
                     pthread_cond_wait(&FullPool, &Lock);
                 }
 
-                Request fish_request = createRequest(connfd);
+                //Request fish_request = createRequest(connfd);
                 addPendingRequest(requests_control, fish_request);
                 pthread_cond_signal(&EmptyPool);
                 pthread_mutex_unlock(&Lock);
