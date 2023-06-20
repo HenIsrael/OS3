@@ -253,7 +253,7 @@ FEWER_FILES = {'/home.html': [True, STATIC_OUTPUT_CONTENT, generate_static_heade
                '/favicon.ico': [False, None, generate_static_headers(r"\d+", r"\d+", r"\d+", r"\d+", "text/plain")]
                }
 
-""" 
+
 @pytest.mark.parametrize("policy, threads, num_clients, queue_size, times, files",
                          [
                              ("block", 16, 20, 8, 20, FEWER_FILES),
@@ -287,7 +287,7 @@ def test_fewer(policy, threads, num_clients, queue_size, times, files, server_po
                     else:
                         validate_response_binary(response, expected_headers, expected)
                 assert dropped == (num_clients - queue_size if policy != "block" and ".cgi" in file_name else 0)
-                """
+                
 
 
 @pytest.mark.parametrize("threads, num_clients, queue_size, times",

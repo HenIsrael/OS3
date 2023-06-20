@@ -70,7 +70,6 @@ void* thread_routine (void* worker )
         while(waitingQueueIsEmpty(requests_control)){
         pthread_cond_wait(&EmptyPool , &Lock);
         }
-        // קמתי לתחיה, אני רוצה למשוך משימה מהתור 
         Request current_task = getReadyRequest(requests_control);
         addReadyRequest(requests_control, current_task);
 
