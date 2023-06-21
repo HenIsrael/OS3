@@ -69,7 +69,7 @@ void nodeDelete(Node node){
  * Description: Queue Structure Implementation
  **************************************************************/
 
-List listCreate(CopyDataFunction copyDataFunction, CompareDataFunction compareDataFunction,FreeDataFunction freeDataFunction, Print print){
+List list_create(CopyDataFunction copyDataFunction, CompareDataFunction compareDataFunction,FreeDataFunction freeDataFunction, Print print){
     List list = malloc(sizeof(*list));
     if(list == NULL){
         return NULL;
@@ -101,7 +101,7 @@ List listCreate(CopyDataFunction copyDataFunction, CompareDataFunction compareDa
 }
 
 
-ListResult listPushBack(List list, Data data){
+ListResult list_push_back(List list, Data data){
     if(list == NULL || data == NULL){
         return LS_NULL_ARGUMENT;
     }
@@ -114,7 +114,7 @@ ListResult listPushBack(List list, Data data){
     return LS_SUCCESS;
 }
 
-ListResult listPushFront(List list, Data data){
+ListResult list_push_front(List list, Data data){
     if(list == NULL || data == NULL){
         return LS_NULL_ARGUMENT;
     }
@@ -127,7 +127,7 @@ ListResult listPushFront(List list, Data data){
     return LS_SUCCESS;
 }
 
-ListResult listInsertAtIndex(List list, int index, Data data){
+ListResult list_insert_at_index(List list, int index, Data data){
     if(list == NULL || data == NULL){
         return LS_NULL_ARGUMENT;
     }
@@ -147,7 +147,7 @@ ListResult listInsertAtIndex(List list, int index, Data data){
     return LS_SUCCESS;
 }
 
-Data listPopFront(List list){
+Data list_pop_front(List list){
     if(list->size == 0){
         return NULL;
     }
@@ -164,7 +164,7 @@ Data listPopFront(List list){
     return data;
 }
 
-Data listPopBack(List list){
+Data list_pop_back(List list){
     if(list->size == 0){
         return NULL;
     }
@@ -196,7 +196,7 @@ Data _removeNode(List list, Node currentNode){
     return removedData;
 }
 
-ListResult listRemoveAtIndex(List list, int index, Data* removedData){
+ListResult list_remove_at_index(List list, int index, Data* removedData){
     if(list == NULL){
         return LS_NULL_ARGUMENT;
     }
@@ -216,7 +216,7 @@ ListResult listRemoveAtIndex(List list, int index, Data* removedData){
     return LS_SUCCESS;
 }
 
-ListResult listRemoveAtData(List list, Data data, Data* removedData){
+ListResult list_remove_at_data(List list, Data data, Data* removedData){
     if(list == NULL){
         return LS_NULL_ARGUMENT;
     }
@@ -241,13 +241,13 @@ ListResult listRemoveAtData(List list, Data data, Data* removedData){
     return LS_SUCCESS;
 }
 
-int listGetSize(List list){
+int list_get_size(List list){
     return  list->size;
 }
 
-void listPrint(List list){
+void list_print(List list){
     Node node = list->head;
-    int size = listGetSize(list);
+    int size = list_get_size(list);
     if(size == 0)
         return;
     for (int i = 0; i < size; ++i) {
@@ -256,7 +256,7 @@ void listPrint(List list){
     }
 }
 
-void listDelete(List list){
+void list_delete(List list){
     nodeDelete(list->head);
     free(list);
 }

@@ -39,22 +39,22 @@ typedef struct list_t{
     int size;
 }*List;
 
-List listCreate(CopyDataFunction copyDataFunction, CompareDataFunction compareDataFunction, FreeDataFunction freeDataFunction, Print print);
+List list_create(CopyDataFunction copyDataFunction, CompareDataFunction compareDataFunction, FreeDataFunction freeDataFunction, Print print);
 
-ListResult listPushBack(List list, Data data);
-ListResult listPushFront(List list, Data data);
+ListResult list_push_back(List list, Data data);
+ListResult list_push_front(List list, Data data);
 
-ListResult listInsertAtIndex(List list, int index, Data data);
+ListResult list_insert_at_index(List list, int index, Data data);
 
-Data listPopFront(List list);
-Data listPopBack(List list);
+Data list_pop_front(List list);
+Data list_pop_back(List list);
 
-ListResult listRemoveAtIndex(List list, int index, Data* removedData);
-ListResult listRemoveAtData(List list, Data data, Data* removedData);
+ListResult list_remove_at_index(List list, int index, Data* removedData);
+ListResult list_remove_at_data(List list, Data data, Data* removedData);
 
-int listGetSize(List list);
+int list_get_size(List list);
 
-void listPrint(List list);
+void list_print(List list);
 
-void listDelete(List list);
+void list_delete(List list);
 #endif //QUENE_DATA_STRUCTURE
